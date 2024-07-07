@@ -1,4 +1,4 @@
-# PortableBinary.py
+# PortableBinaryGUI.py
 # Copyright (c) 2024 Jazzzny
 
 from argparse import Namespace
