@@ -11,6 +11,8 @@ Alternatively, run the following command in the terminal:
 ```bash
 $ python3 ./PortableBinaryGUI.py
 ```
+Note that Python 3.6 or later is required (Python 2 is not supported).
+
 
 ## Usage (CLI)
 ```bash
