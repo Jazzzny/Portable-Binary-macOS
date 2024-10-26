@@ -1,0 +1,56 @@
+name: Build Portable Binary GUI and CLI
+
+on:
+    push:
+
+jobs:
+    build:
+        runs-on: macos-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Install Python.org Python
+              run: |
+                wget https://www.python.org/ftp/python/3.12.5/python-3.12.5-macos11.pkg
+                sudo installer -pkg python-3.12.5-macos11.pkg -target /
+
+            - name: Install dependencies
+              run: |
+                    python3 -m pip install --upgrade pip
+                    pip3 install pyinstaller
+
+            - name: Build GUI
+              run: |
+                    pyinstaller PortableBinaryGUI.py --onefile --target-architecture universal2 --strip --name PortableBinary-GUI
+
+            - name: Build CLI
+              run: |
+                    pyinstaller PortableBinary.py --onefile --target-architecture universal2 --strip --name PortableBinary
+
+            - name: Upload CLI
+              uses: actions/upload-artifact@v4
+              with:
+                    name: PortableBinary
+                    path: dist/PortableBinary
+
+            - name: Upload GUI
+              uses: actions/upload-artifact@v4
+              with:
+                    name: PortableBinary-GUI
+                    path: dist/PortableBinary-GUI
+
+            - name: Create rolling release
+              uses: softprops/action-gh-release@v2
+              with:
+                files: |
+                  dist/PortableBinary
+                  dist/PortableBinary-GUI
+                tag_name: ${{ github.sha }}
+                name: Portable Binary ${{ github.sha }}
+                body: |
+                  This is a prebuilt release for the latest commit.
+                  It contains the Portable Binary CLI and GUI.
+                make_latest: true
+
+
