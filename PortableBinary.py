@@ -44,7 +44,15 @@ class PortableBinary:
             shutil.copy(dependency, lib_dir)
             self.install_name_tool_lib(os.path.join(lib_dir, os.path.basename(dependency)))
 
+            if not self.args.no_codesign:
+                self.codesign_lib(os.path.join(lib_dir, os.path.basename(dependency)))
+
         self.install_name_tool_bin(os.path.join(self.args.output_dir, os.path.basename(self.args.binary)))
+
+        if not self.args.no_codesign:
+            self.codesign_bin(os.path.join(self.args.output_dir, os.path.basename(self.args.binary)))
+
+        print("Done")
 
         return 0
 
@@ -89,6 +97,10 @@ class PortableBinary:
                 print(f"Changing dependency {dependency} to {new_dependency} in {lib}")
                 subprocess.run(["install_name_tool", "-change", dependency, new_dependency, lib])
 
+    def codesign_lib(self, lib):
+        print(f"Codesigning {lib}")
+        subprocess.run(["codesign", "--force", "--deep", "--sign", "-", lib])
+
     def install_name_tool_bin(self, lib):
         # add rpath to lib
         subprocess.run(["install_name_tool", "-add_rpath", f"@loader_path/{self.args.lib_dir_name}", lib])
@@ -103,12 +115,17 @@ class PortableBinary:
             print(f"Changing dependency {dependency} to {new_dependency} in {lib}")
             subprocess.run(["install_name_tool", "-change", dependency, new_dependency, lib])
 
+    def codesign_bin(self, lib):
+        print(f"Codesigning {lib}")
+        subprocess.run(["codesign", "--force", "--deep", "--sign", "-", lib])
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Turn a macOS package manager-installed binary (MacPorts/Homebrew) into a portable binary.')
 
     parser.add_argument('binary', type=str, help='The input binary.')
     parser.add_argument('output_dir', type=str, help='The directory to output the portable binary to.')
     parser.add_argument('--lib_dir_name', type=str, default="lib", help='The name of the directory to output the dependencies to.')
+    parser.add_argument('--no-codesign', action='store_true', help='Don\'t codesign the binary and dependencies.')
     parser.add_argument('--version', action='version', version=version)
 
     return parser.parse_args()

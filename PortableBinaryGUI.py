@@ -11,7 +11,7 @@ class PortableBinaryGUI:
     def __init__(self, root):
         self.root = root
         self.root.title(f"Portable Binary {version} GUI")
-        self.root.geometry("500x125")
+        self.root.geometry("500x150")
         self.root.resizable(False, False)
 
         self.root.columnconfigure(0, weight=1)
@@ -46,9 +46,15 @@ class PortableBinaryGUI:
 
         self.lib_dir_name_entry.insert(0, "lib")
 
+        # Options checkboxes
+        self.no_codesign_var = tk.IntVar()
+        self.no_codesign_checkbox = ttk.Checkbutton(self.root, text="Codesign", variable=self.no_codesign_var)
+        self.no_codesign_var.set(1)
+        self.no_codesign_checkbox.grid(row=3, column=1, columnspan=2, sticky="w")
+
         # Run button
         self.run_button = ttk.Button(self.root, text="Run", command=self.run)
-        self.run_button.grid(row=3, column=0, columnspan=3, pady=5)
+        self.run_button.grid(row=4, column=0, columnspan=3, pady=5)
 
     def browse_binary(self):
         filename = filedialog.askopenfilename()
@@ -66,12 +72,12 @@ class PortableBinaryGUI:
         tk.messagebox.showinfo(title, message)
 
     def run(self):
-        portable_binary = PortableBinary(Namespace(binary=self.binary_entry.get(), output_dir=self.output_dir_entry.get(), lib_dir_name=self.lib_dir_name_entry.get()))
+        portable_binary = PortableBinary(Namespace(binary=self.binary_entry.get(), output_dir=self.output_dir_entry.get(), lib_dir_name=self.lib_dir_name_entry.get(), no_codesign=not self.no_codesign_var.get()))
         result = portable_binary.run()
         if result == 0:
             self.showinfo("Success", "Portable binary created successfully!")
         else:
-            self.showerror("Error", "An error occurred while creating the portable binary.")
+            self.showinfo("Error", "An error occurred while creating the portable binary.")
 
 if __name__ == "__main__":
     root = tk.Tk()
