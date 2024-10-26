@@ -17,8 +17,9 @@ jobs:
 
             - name: Install dependencies
               run: |
-                    python3 -m pip install --upgrade pip
-                    pip3 install pyinstaller
+                    /Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pip install --upgrade pip
+                    /Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pip install pyinstaller
+
 
             - name: Build GUI
               run: |
