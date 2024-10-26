@@ -41,14 +41,19 @@ jobs:
                     name: PortableBinary-GUI
                     path: dist/PortableBinary-GUI
 
+            - name: Get short commit hash
+              id: commit_hash
+              run: echo "::set-output name=hash::$(echo $GITHUB_SHA | cut -c1-7)"
+
             - name: Create rolling release
               uses: softprops/action-gh-release@v2
               with:
                 files: |
                   dist/PortableBinary
                   dist/PortableBinary-GUI
-                tag_name: ${{ github.sha }}
-                name: Portable Binary ${{ github.sha }}
+                # tag name should be commit id
+                tag_name: ${{ steps.commit_hash.outputs.hash }}
+                name: Portable Binary ${{ steps.commit_hash.outputs.hash }}
                 body: |
                   This is a prebuilt release for the latest commit.
                   It contains the Portable Binary CLI and GUI.
