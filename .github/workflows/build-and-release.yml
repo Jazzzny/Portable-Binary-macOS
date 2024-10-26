@@ -51,7 +51,6 @@ jobs:
                 files: |
                   dist/PortableBinary
                   dist/PortableBinary-GUI
-                # tag name should be commit id
                 tag_name: ${{ steps.commit_hash.outputs.hash }}
                 name: Portable Binary ${{ steps.commit_hash.outputs.hash }}
                 body: |
